@@ -1,0 +1,71 @@
+{% load static %}
+<script src="{% static 'libraries/jquery/jquery-3.3.1.min.js' %}"></script>
+<script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+ <!--   Core JS Files   -->
+ <script src="{% static 'resources/assets_argon/js/core/popper.min.js' %}"></script>
+ <script src="{% static 'libraries/bootstrap-5.2.0/js/bootstrap.min.js' %}"></script>
+ <script src="{% static 'resources/assets_argon/js/plugins/perfect-scrollbar.min.js' %}"></script>
+ <script src="{% static 'resources/assets_argon/js/plugins/smooth-scrollbar.min.js'  %}"></script>
+ <!-- Github buttons -->
+ <script async defer src="https://buttons.github.io/buttons.js"></script>
+ <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
+ <script src="{% static 'resources/assets_argon/js/argon-dashboard.js' %}?v=2.0.4"></script>
+ <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+ <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/4.4.0/mdb.min.js"></script> -->
+ <script>
+    // handle cookie
+    function getCsrftoken(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    function check_support_session_storage(){
+        if ( typeof(Storage) !== 'undefined') {
+            sessionStorage.clear();
+            return true; 
+        } else {
+            console.log('Your browner is not supported!');
+            return false;
+        }
+    }
+ </script>
+ <script>
+    //  check url to add active 
+    function auto_set_color(){
+     
+        path = window.location.href;
+        if (path.includes('workspaces') || path.includes('workspace')){
+            $("#visualize").addClass("active");
+        }
+        else if(path.includes('dashboard')){
+            $("#dashboard").addClass("active")
+        }
+        else if(path.includes('profile')){
+            $("#profile").addClass("active")
+        }
+        else if(path.includes('class')){
+            $("#class").addClass("active")
+        }
+        else if(path.includes('supervise')){
+            $("#supervise").addClass("active")
+        }
+        else{
+        }
+        // get color from localstorgare 
+        color= localStorage.getItem("color");
+        if (color !== null){
+            $("#sidenav-main").attr("data-color", color);
+        }
+    }
+    auto_set_color();
+ </script>

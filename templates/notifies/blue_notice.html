@@ -1,0 +1,17 @@
+<section style="position: fixed; z-index: 9; right: 1vw;">
+    <div class="square_box box_three"></div>
+    <div class="square_box box_four"></div>
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="alert fade alert-simple alert-success alert-dismissible text-left font__family-montserrat font__size-16 font__weight-light brk-library-rendered rendered show">
+            <i class="start-icon far fa-check-circle faa-tada animated"></i>
+            <strong class="font__weight-semibold"> Well done! </strong> 
+            {% for message in messages %}
+                {{message}}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+</section>

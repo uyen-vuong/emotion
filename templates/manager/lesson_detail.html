@@ -1,0 +1,190 @@
+{% extends 'base/base_layout.html' %} {% load static %} {% block title %}Show
+lesson{% endblock %} {% block style %}
+<style>
+  .btn {
+    margin-right: 30px;
+  }
+  .capture_image {
+    width: 320px;
+    height: 240px;
+    margin-top: 15px;
+    border-radius: 5px;
+  }
+</style>
+{% endblock style %} {% block main %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-6">
+        <h5 style="color: white">Lesson: {{ lesson.name }}</h5>
+        <h6 style="color: white">Start: {{ lesson.start }}</h6>
+        <h6 style="color: white">End: {{ lesson.start }}</h6>
+        </div>
+        <div class="col-md-6">
+        <div class="function mt-4" style="display: flex">
+            <button type="button" class="btn btn-success ml-3" id="start" style="width: 120px;">START</button>
+            <button type="button" class="btn btn-danger ml-3" id="stop" style="width: 120px;">STOP</button>
+        </div>
+        </div>
+    </div>
+    <div class="container-fluid py-4">
+        <div class="row">
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="row">
+                    <div class="col-8">
+                        <div class="numbers">
+                        <p class="text-sm mb-0 text-uppercase font-weight-bold">
+                            Avenger FPS
+                        </p>
+                        <h5 class="font-weight-bolder"><span id = "fps">0</span> FPS</h5>
+                        <p class="mb-0">
+                            <span id="fps_change" class="text-success text-sm font-weight-bolder"
+                            >+0%</span
+                            >
+                            since last 5 sec
+                        </p>
+                        </div>
+                    </div>
+                    <div class="col-4 text-end">
+                        <div
+                        class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                        <i
+                            class="ni ni-money-coins text-lg opacity-10"
+                            aria-hidden="true"
+                        ></i>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+            <div class="card">
+              <div class="card-body p-3">
+                <div class="row">
+                  <div class="col-8">
+                    <div class="numbers">
+                      <p class="text-sm mb-0 text-uppercase font-weight-bold">Total Student</p>
+                      <h5 class="font-weight-bolder" id = "student">
+                        0
+                      </h5>
+                      <p class="mb-0">
+                        <span class="text-success text-sm font-weight-bolder" id = "student_change">+0%</span>
+                        since last 5 sec
+                      </p>
+                    </div>
+                  </div>
+                  <div class="col-4 text-end">
+                    <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
+                      <i class="ni ni-world text-lg opacity-10" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>  
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+            <div class="card">
+              <div class="card-body p-3">
+                <div class="row">
+                  <div class="col-8">
+                    <div class="numbers">
+                      <p class="text-sm mb-0 text-uppercase font-weight-bold">Normal Student</p>
+                      <h5 class="font-weight-bolder" id = "normal_student">
+                        0
+                      </h5>
+                      <p class="mb-0">
+                        <span class="text-danger text-sm font-weight-bolder" id="normal_student_change">-0%</span>
+                        since last 5 sec
+                      </p>
+                    </div>
+                  </div>
+                  <div class="col-4 text-end">
+                    <div class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle">
+                      <i class="ni ni-paper-diploma text-lg opacity-10" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>  
+        <div class="col-xl-3 col-sm-6">
+            <div class="card">
+              <div class="card-body p-3">
+                <div class="row">
+                  <div class="col-8">
+                    <div class="numbers">
+                      <p class="text-sm mb-0 text-uppercase font-weight-bold">LESSON QUALITY</p>
+                      <h5 class="font-weight-bolder" id = "quality">
+                        0
+                      </h5>
+                      <p class="mb-0">
+                        <span class="text-success text-sm font-weight-bolder" id = "quality_change">+0%</span> since last 5 sec
+                      </p>
+                    </div>
+                  </div>
+                  <div class="col-4 text-end">
+                    <div class="icon icon-shape bg-gradient-warning shadow-warning text-center rounded-circle">
+                      <i class="ni ni-cart text-lg opacity-10" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class = "col-md-5 mt-4" style = 'align-items: center;'>
+            <canvas id="myPieChart"></canvas>
+        </div>
+        <div class="col-md-7 mt-4">
+            <canvas id="analysis-chart" style="background-color: rgb(255, 255, 255); border-radius: 25px;"> </canvas>
+        </div>
+        <div class = "mt-4">
+            <img id="imageElement" src="{% static 'assets/images/default-img.gif' %}" alt="" srcset="" width="640" >
+        </div>
+    </div>
+  </div>
+  {% endblock main %} {% block modal %} {% endblock modal %} {% block scripts %}
+  <script>
+    const csrftoken = getCsrftoken("csrftoken");
+    var labels = ["neutral", "happiness","surprise", "sadness","anger","disgust","fear","contempt"]
+    var lessonID = "{{lesson.id}}";
+    const roomName = lessonID;
+    function get_info_chart() {
+      let url = "/manager/emotion/" + lessonID;
+      $.ajax({
+        url: url,
+        headers: { "X-CSRFToken": csrftoken },
+        method: "GET",
+        async: true,
+        success: (response) => {
+          data = response[0];
+          quantity = [];
+          latest_quantity = [];
+          labels.forEach((element) => {
+            quantity.push(data[element]);
+            latest_quantity.push(data[`latest_${element}`]);
+          });
+          update_chart(labels, quantity);
+          updatePieChart(latest_quantity);
+        },
+        error: (err) => {
+          console.log(error);
+        },
+      });
+    }
+    $(document).ready(function () {
+      init_bar_chart();    
+      init_pie_chart();  
+      
+    });
+  </script>
+  <script src="{% static 'js/bar_chart_process.js' %}"></script>
+  <script src="{% static 'js/control_device.js' %}"></script>
+  <script src="{% static 'js/pie_chart_process.js' %}"></script>
+  <script src="{% static 'js/websocket_lesson.js' %}"></script>
+  {% endblock scripts %}
+</div>

@@ -1,0 +1,40 @@
+<html>
+	<head>
+		<title>Websocket video stream client example</title>
+	</head>
+	<body>
+		<canvas id="canvas" width="640" height="480"></canvas>
+
+		<script>
+			var websocketAddress = "ws://localhost:8000/ws/chat/demo/";
+			var c = document.getElementById("canvas");
+			var ctx = c.getContext("2d");
+
+			var websocket = new WebSocket(websocketAddress);
+
+			websocket.onopen = function () {
+				console.log("websocket connected");
+			};
+
+			websocket.onclose = function () {
+				console.log("websocket disconnected");
+			};
+
+			websocket.onmessage = function (evt) {
+				var image = new Image();
+                console.log("recd image");
+				image.onload = function () {
+					ctx.drawImage(image, 0, 0);
+				};
+        evt.data.text().then((data) => {
+            image.src = "data:image/jpeg;base64," + data;
+        })
+			};
+
+			websocket.onerror = function (evt) {
+				console.log('error: ' + evt.data);
+				websocket.close();
+			};
+		</script>
+	</body>
+</html>

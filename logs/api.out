@@ -1,0 +1,29 @@
+[2023-09-03 07:33:33 +0000] [19] [INFO] Starting gunicorn 20.1.0
+[2023-09-03 07:33:33 +0000] [19] [INFO] Listening at: http://0.0.0.0:8000 (19)
+[2023-09-03 07:33:33 +0000] [19] [INFO] Using worker: sync
+[2023-09-03 07:33:33 +0000] [21] [INFO] Booting worker with pid: 21
+[2023-09-03 07:33:33 +0000] [22] [INFO] Booting worker with pid: 22
+[2023-09-03 09:43:29 +0000] [19] [INFO] Starting gunicorn 20.1.0
+[2023-09-03 09:43:29 +0000] [19] [INFO] Listening at: http://0.0.0.0:8000 (19)
+[2023-09-03 09:43:29 +0000] [19] [INFO] Using worker: sync
+[2023-09-03 09:43:29 +0000] [21] [INFO] Booting worker with pid: 21
+[2023-09-03 09:43:29 +0000] [22] [INFO] Booting worker with pid: 22
+[2023-09-03 09:45:51 +0000] [18] [INFO] Starting gunicorn 20.1.0
+[2023-09-03 09:45:51 +0000] [18] [INFO] Listening at: http://0.0.0.0:8000 (18)
+[2023-09-03 09:45:51 +0000] [18] [INFO] Using worker: sync
+[2023-09-03 09:45:51 +0000] [20] [INFO] Booting worker with pid: 20
+[2023-09-03 09:45:51 +0000] [21] [INFO] Booting worker with pid: 21
+[2023-09-03 09:46:04 +0000] [18] [INFO] Handling signal: int
+[2023-09-03 09:46:04 +0000] [20] [INFO] Worker exiting (pid: 20)
+[2023-09-03 09:46:04 +0000] [21] [INFO] Worker exiting (pid: 21)
+[2023-09-03 09:46:04 +0000] [18] [INFO] Shutting down: Master
+[2023-09-03 09:55:54 +0000] [10] [INFO] Starting gunicorn 20.1.0
+[2023-09-03 09:55:54 +0000] [10] [INFO] Listening at: http://0.0.0.0:8000 (10)
+[2023-09-03 09:55:54 +0000] [10] [INFO] Using worker: sync
+[2023-09-03 09:55:54 +0000] [12] [INFO] Booting worker with pid: 12
+[2023-09-03 09:55:54 +0000] [13] [INFO] Booting worker with pid: 13
+[2023-09-03 09:58:01 +0000] [9] [INFO] Starting gunicorn 20.1.0
+[2023-09-03 09:58:01 +0000] [9] [INFO] Listening at: http://0.0.0.0:8000 (9)
+[2023-09-03 09:58:01 +0000] [9] [INFO] Using worker: sync
+[2023-09-03 09:58:01 +0000] [11] [INFO] Booting worker with pid: 11
+[2023-09-03 09:58:01 +0000] [12] [INFO] Booting worker with pid: 12

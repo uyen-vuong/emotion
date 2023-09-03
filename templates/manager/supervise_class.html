@@ -1,0 +1,238 @@
+{% extends 'base/base_layout.html' %} 
+
+{% load static %} 
+
+{% block title %}Visualize{% endblock %}
+
+{% block style %} 
+
+<style>
+.text_long{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width:200px; /* some width */
+}
+</style>
+
+{% endblock style %}
+{% block main %} 
+
+<div class="container-fluid py-4">
+    <div class = "row">
+        <div class = 'col-sm-3'>
+            <select class="form-select list-option" aria-label="Classroom">
+                <option selected value = "-1">Choose Classroom</option>
+                {% for cluster in clusters %}
+                    <option value = "{{cluster.id}}"">{{ cluster.name }}</option>
+                {% endfor %}
+            </select>
+        </div>    
+        <div class = 'col-sm-2'>
+            <button type="button" class="btn btn-danger" id = "create-popup">Crete new lesson</button>
+        </div>            
+    </div>
+    <div class="row">
+        <div class="col-12">
+          <div class="card mb-4">
+            <div class="card-body px-0 pt-0 pb-2">
+              <div class="table-responsive p-0">
+                <table class="table align-items-center mb-0" style = "max-height: 70vh; overflow-y: scroll;">
+                  <thead>
+                    <tr>
+                      <th class="text-secondary text-xss font-weight-bolder opacity-7">Name</th>
+                      <th class="text-secondary text-xss font-weight-bolder opacity-7 ">Time start</th>
+                      <th class="text-secondary text-xss font-weight-bolder opacity-7 ">Time end</th>
+                      <th class="text-center text-secondary text-xss font-weight-bolder opacity-7">Auto start</th>
+                      <th class="text-center text-secondary text-xss font-weight-bolder opacity-7">Status</th>
+                      <th class="text-cente  text-secondary text-xss font-weight-bolder opacity-7">Monitoring</th>
+                      <th class="text-center  text-secondary text-xss font-weight-bolder opacity-7">Delete</th>
+                      <th class="text-secondary opacity-7"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+{% endblock main %}
+
+{% block modal %} 
+
+<div class="modal fade" id="modalCreateWS" tabindex="-1" 
+        data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" 
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalCenterTitle">Create new lesson</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <div class="form-group">
+          <label for="example-text-input" class="form-control-label">Name of lesson</label>
+          <input class="form-control" type="text" value="" id="name" placeholder="Any name" >
+        </div>
+        <div class="form-group">
+            <label for="example-search-input" class="form-control-label">Time-start</label>
+            <input class="form-control" type="datetime-local" value="" id="start" placeholder="13:00">
+        </div>
+        <div class="form-group">
+            <label for="example-search-input" class="form-control-label">Time-end</label>
+            <input class="form-control" type="datetime-local" value="" id="end" placeholder="15:00">
+        </div>
+
+        <div class="custom-control custom-checkbox mb-3">
+            <input class="custom-control-input" id="auto" type="checkbox">
+            <label class="custom-control-label" for="customCheck1">Auto start lesson</label>
+        </div>
+      </div>
+      <div class="modal-footer pb-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary create_ws">Create</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock modal %}
+{% block scripts %} 
+
+<script>    
+
+    function append_into_table(items){
+
+        items.forEach(workspace => {
+           
+            let element = `<tr id = "${workspace['id']}" style="align-items-center">
+                <td>
+                <p class="text-xs font-weight-bold mb-0 name text_long">${workspace['name']}</p>
+                </td>
+                <td>
+                <p class="text-xs font-weight-bold mb-0 filepath">${workspace['start']}</p>
+                </td>
+                <td>
+                <p class="text-xs font-weight-bold mb-0 filepath">${workspace['end']}</p>
+                </td>
+                <td style = "text-align: center">
+                    <p class="text-xs font-weight-bold mb-0 filepath">Not support</p>
+                </td>
+                <td class="align-middle text-center text-sm" style="cursor: pointer;">
+                    <span class="badge badge-sm bg-gradient-secondary">${workspace['status']}</span>
+                </td>
+                <td class="align-middle text-center text-sm" style="cursor: pointer;">
+                    <span class="badge badge-sm bg-gradient-info" onclick="show_lesson(${workspace['id']})">Show</span>
+                </td>
+                <td class="align-middle text-center text-sm" style="cursor: pointer;">
+                    <span class="badge badge-sm bg-gradient-danger" onclick="delete_lesson(${workspace['id']})">Delete</span>
+                </td>
+            </tr>`;
+            $('tbody').append(element);
+            });
+    }
+    const csrftoken = getCsrftoken('csrftoken');
+
+    function delete_lesson(id){
+        let url = `/manager/lesson/${id}`;
+        $.ajax({
+                url: url,
+                headers: {"X-CSRFToken": getCsrftoken('csrftoken')},
+                method: "DELETE",
+                async: true,
+                success: response => {
+                    alert("Successfully deleted!");
+                    $(`#${id}`).remove();
+                },
+                error: err => {
+                    console.log(error);
+                }
+        });
+    }
+    function show_lesson(id){
+        document.location.href = `/manager/monitor/${id}`;
+    }
+    $(document).ready(function(){
+        $("#create-popup").click(function(){
+
+            let cluster= $(".list-option").val();
+            if (cluster != "-1"){
+                $("#modalCreateWS").modal("show");
+            }
+            else{
+                alert("Must choose a classroom before creating lesson");
+            }
+            
+        });
+    })
+    $('.create_ws').click(function(){
+
+        let name = $("#name").val();
+        if (name == ""){
+            alert("Name can not empty");
+            return false;
+        }
+        let start = $("#start").val();
+        if (start === null || start === ""){
+            alert("Start time need to choose!")
+            return false;
+        }
+        let end = $("#end").val();
+        if (end === null || end === ""){
+            alert("End time need to choose!")
+            return false;
+        }
+        if (end < start){
+            alert("Time end must bigger then time start!")
+            return false;
+        }
+        let auto_start = $("#auo").val();
+        let cluster= $(".list-option").val();
+
+        let payload = {
+            "start": start, "end": end, "name": name, "clusterID": parseInt(cluster)
+        }
+        $("#modalCreateWS").modal("hide");
+        $.ajax({
+              url: "/manager/lessons",
+              method: "POST",
+              headers: {"X-CSRFToken": csrftoken},
+              contentType: "application/json",
+              dataType: "json",
+              data: JSON.stringify(payload),
+              success: response => {
+                  
+                  append_into_table([response]);
+                  alert("Successfully created");
+
+              },
+              error: err => {
+                  console.log(err);
+                  alert("This name already exists");
+              }
+        });
+    });
+    $(".list-option").change( function() {
+        cluster = $(this).val();
+        // get data all of lesson in this cluster
+        $.ajax({
+            url: `/manager/lesson_all/${cluster}`,
+            headers: {"X-CSRFToken": csrftoken},
+            method: "GET",
+            async: true,
+            success: response => {
+                append_into_table(response);
+            },
+            error: err => {
+                console.log(error);
+            }
+        });
+
+    });
+</script>
+
+{% endblock scripts %}

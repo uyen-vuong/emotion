@@ -1,0 +1,66 @@
+version: '3.7'
+services:
+
+  mysql57-server:
+    container_name: mysql-resms
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: 'emotion_db'
+      MYSQL_ROOT_PASSWORD: 'root'
+    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+    ports:
+      - "13306:3306"
+    expose:
+      - "3306"
+    restart: always
+    networks:
+      - resms-network
+
+  redis-server:
+    container_name: redis-resms
+    image: redis:alpine
+    ports:
+      - "16379:6379"
+    restart: always
+    networks:
+      - resms-network
+
+  resms:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: resms
+    image: hmtrung1210/resms:v_emotion_manage
+    ports:
+      - 8000:8000
+      - 8001:8001
+    volumes:
+      - ./:/opt/app/resms/
+      - ./collectstatic/:/opt/app/resms/collectstatic/
+    environment:
+      DJANGO_SUPERUSER_EMAIL: 'hoangmautrung@gmail.com'
+      DJANGO_SUPERUSER_PASSWORD: 'Admin@123'
+      VERSION: 1.0
+    tty: true
+    stdin_open: true
+    command: >
+      bash -c "(python3 manage.py migrate) && (./start-server.sh) && python3"
+    restart: always
+    networks:
+      - resms-network
+
+  nginx:
+    build: ./nginx
+    image: nginx-resms:latest
+    ports:
+      - 9000:80
+    volumes:
+      - ./static/:/var/www/html/static/
+    networks:
+      - resms-network
+
+networks:
+  resms-network:
+    driver: bridge
+    ipam:
+      driver: default

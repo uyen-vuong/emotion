@@ -1,0 +1,289 @@
+{% extends 'base/base_layout.html' %} 
+
+{% load static %} 
+
+{% block title %}Class Manage{% endblock %}
+
+{% block style %} 
+
+<style>
+  tr{
+    text-align: center;
+  }
+</style>
+
+{% endblock style %}
+{% block main %} 
+<div class="container-fluid py-4">
+    <div class = 'row'>
+        <div class = 'col-12'>
+          <button type="button" class="btn btn-warning" style="float: right; margin-right: 4vw;" data-bs-toggle="modal" data-bs-target="#modalCreateWS">Create new</button>
+        </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="card mb-4">
+          <div class="card-body px-0 pt-0 pb-2">
+            <div class="table-responsive p-0">
+              <table class="table align-items-center mb-0" style = "max-height: 70vh; overflow-y: scroll;">
+                <thead>
+                  <tr>
+                    <th class="text-secondary text-xss font-weight-bolder opacity-7">Name</th>
+                    <th class="text-secondary text-xss font-weight-bolder opacity-7 ">Mac Address</th>
+                    <th class="text-secondary text-xss font-weight-bolder opacity-7 ">Number of camera</th>
+                    <th class="text-center text-secondary text-xss font-weight-bolder opacity-7">Created at</th>
+                    <th class="text-center text-secondary text-xss font-weight-bolder opacity-7">Status</th>
+                    <th class="text-cente  text-secondary text-xss font-weight-bolder opacity-7">Setting</th>
+                    <th class="text-center  text-secondary text-xss font-weight-bolder opacity-7">Delete</th>
+                    <th class="text-secondary opacity-7"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+{% endblock main %}
+
+{% block modal %} 
+
+<div class="modal fade" id="modalCreateWS" tabindex="-1" 
+        data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" 
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalCenterTitle">Create new class</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <div class="form-group">
+          <label for="example-text-input" class="form-control-label">Name of class</label>
+          <input class="form-control" type="text" value="" id="name" placeholder="Any name" >
+        </div>
+        <div class="form-group">
+            <label for="example-search-input" class="form-control-label">Identify ID (Mac address)</label>
+            <input class="form-control" type="search" value="" id="mac" placeholder="ab:cD:12:34:56">
+        </div>
+
+        <div class="form-group">
+            <label for="example-search-input" class="form-control-label">Number of camera</label>
+            <input class="form-control" type="number" value="4" id="num_camera" placeholder="4">
+        </div>
+        
+      </div>
+      <div class="modal-footer pb-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary create_ws">Create</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalSetting" tabindex="-1" 
+        data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" 
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalCenterTitle">Setting Classroom</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id = "camera-setting">
+      </div>
+      <div class="modal-footer pb-0">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary update_ws" data-value="">Setting</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock modal %}
+{% block scripts %} 
+<script>
+
+    function covert_ISO_to_date(ISO_date_str){
+      date = new Date(ISO_date_str);
+      year = date.getFullYear();
+      month = date.getMonth()+1;
+      dt = date.getDate();
+      if (dt < 10) {
+        dt = '0' + dt;
+      }
+      if (month < 10) {
+        month = '0' + month;
+      }
+      return year+'-' + month + '-'+dt;
+    }
+    function append_into_table(workspaces){
+
+      // $('tbody').empty();
+      workspaces.forEach(workspace => {
+
+        let state = workspace['status'];
+        console.log(state);
+        let value, color;
+        if (!state){
+          value = "Stopped";
+          color = "bg-gradient-secondary";
+        }else {
+          value = "Running";
+          color = "bg-gradient-success";
+        }
+        let element = `<tr id = "${workspace['id']}" style="align-items-center">
+            <td>
+              <p class="text-xs font-weight-bold mb-0 name">${workspace['name']}</p>
+            </td>
+            <td>
+              <p class="text-xs font-weight-bold mb-0 filepath">${workspace['mac_address']}</p>
+            </td>
+            <td id = "num_camera_${workspace['id']}" data-value = '${workspace['description']}'>
+              <p class="text-xs font-weight-bold mb-0 filepath">${workspace['description']} cameras</p>
+            </td>
+            <td class="align-middle text-center">
+              <span class="text-secondary text-xs font-weight-bold">${covert_ISO_to_date(workspace['created'])}</span>
+            </td>
+            <td class="align-middle text-center text-sm" style="cursor: pointer;">
+              <span class="badge badge-sm ${color}" onclick="setting(${workspace['id']})">${value}</span>
+            </td>
+            <td class="align-middle text-center text-sm" style="cursor: pointer;">
+              <span class="badge badge-sm bg-gradient-warning" onclick="setting(${workspace['id']})">Setting</span>
+            </td>
+            <td class="align-middle text-center text-sm" style="cursor: pointer;">
+              <span class="badge badge-sm bg-gradient-danger" onclick="delete_class(${workspace['id']})">Delete</span>
+            </td>
+          </tr>`;
+        $('tbody').append(element);
+      });
+    }
+    function delete_class(id){
+     
+      let url = `/manager/class/${id}`;
+      $.ajax({
+            url: url,
+            headers: {"X-CSRFToken": getCsrftoken('csrftoken')},
+            method: "DELETE",
+            async: true,
+            success: response => {
+                alert("Successfully deleted!");
+                $(`#${id}`).remove();
+            },
+            error: err => {
+                console.log(error);
+            }
+      });
+    };
+    function setting(id){
+      
+      console.log("HERE");
+      $("#camera-setting").empty();
+      id_ =  `num_camera_${id}`;
+      console.log(id_)
+      let num_camera = $(`#${id_}`).attr("data-value");
+      console.log(num_camera)
+      num_camera = parseInt(num_camera);
+      for(i = 0; i < num_camera; i ++){
+        element = ` 
+        <div class="form-group">
+          <label for="example-text-input" class="form-control-label">Camera URL${i+1}</label>
+          <input class="form-control url-group" type="text" value="" id="cam${i+1}">
+        </div>`
+        $("#camera-setting").append(element);
+      }
+      $(".update_ws").attr("data-value", id);
+      $("#modalSetting").modal("show");
+    };
+   
+    $(document).ready(function(){
+        // load workspace  
+        const csrftoken = getCsrftoken('csrftoken');
+
+        // clear sesion storage
+        sessionStorage.clear();
+
+        $.ajax({
+            url: "/manager/classes",
+            headers: {"X-CSRFToken": csrftoken},
+            method: "GET",
+            async: true,
+            success: response => {
+                append_into_table(response);
+            },
+            error: err => {
+                console.log(error);
+            }
+        });
+
+        $(".create_ws").click(function(){
+
+          let name = $("#name").val();
+          let mac = $("#mac").val();
+          let num_camera = $("#num_camera").val();
+          if (name === "" || mac === "") {
+            alert("Name and mac can not empty?")
+            return 0;
+          }
+          let data_upload = {"name": name, "mac_address" : mac, "description": num_camera }
+          
+          $("#modalCreateWS").modal('hide');
+          // console.log($("#modalCreateWS"));            
+          $.ajax({
+              url: "/manager/classes",
+              method: "POST",
+              headers: {"X-CSRFToken": csrftoken},
+              contentType: "application/json",
+              dataType: "json",
+              data: JSON.stringify(data_upload),
+              success: response => {
+                  
+                  append_into_table([response]);
+                  alert("Successfully created");
+
+              },
+              error: err => {
+                  console.log(err);
+                  alert("This name already exists");
+              }
+          });
+        });
+
+        $(".update_ws").click(function(){
+          let class_id = $(this).attr("data-value");
+
+          let payload = {
+            "clusterID": parseInt(class_id),
+            "urls": []
+          }
+          $('.url-group').each(function(index, element) {
+              let url = $(this).val();
+              payload['urls'].push(url);
+          });
+          console.log(payload)
+          $("#modalSetting").modal("hide");
+          $.ajax({
+              url: "/manager/configures",
+              method: "POST",
+              headers: {"X-CSRFToken": csrftoken},
+              contentType: "application/json",
+              dataType: "json",
+              data: JSON.stringify(payload),
+              success: response => {
+                  console.log(response);
+                  alert("Successfully created");
+              },
+              error: err => {
+                  console.log(err);
+                  alert("Something wrong, Please try again!");
+              }
+          });
+        });
+    });
+</script>
+{% endblock scripts %}
