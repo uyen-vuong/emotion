@@ -53,7 +53,7 @@ services:
     build: ./nginx
     image: nginx-resms:latest
     ports:
-      - 9000:80
+      - 9006:80
     volumes:
       - ./static/:/var/www/html/static/
     networks:
